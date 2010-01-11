@@ -232,7 +232,8 @@ class Loopback(LoggingMixIn, Operations):
                 backdata = os.read(ft, size)
                 fn = os.open(path + ".version" + time.strftime('%Y-%m-%d-%H-%M-%S'), os.O_WRONLY | os.O_CREAT)
                 os.write(fn, backdata)
-                os.close(fn)            
+                os.close(fn)
+                os.close(ft)            
             os.lseek(fd, offset, 0)
             return os.write(fd, data)
 
