@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
 import time
-
+import shutil
 """
 Based on the examples provided with fusepy binding created by Giorgos Verigakis
 from http://code.google.com/p/fusepy/
@@ -173,7 +173,9 @@ class Loopback(LoggingMixIn, Operations):
         return os.rename(old, self.root + new)
     
     #http://docs.python.org/library/os.html#os.rmdir
-    rmdir = os.rmdir
+#    rmdir = os.rmdir
+    def rmdir(self, path):
+        shutil.move(path, path + ".version" + time.strftime('%Y-%m-%d-%H-%M-%S'))
     
     """
     The function statvfs() returns information about a mounted file system.
@@ -217,8 +219,9 @@ class Loopback(LoggingMixIn, Operations):
     #name is its traditional Unix name. http://docs.python.org/library/os.html#os.unlink
     #http://docs.python.org/library/datetime.html?highlight=time#strftime-behavior
     def unlink(self, path):
+        #shutil.move(path, path + ".version" + time.strftime('%Y-%m-%d-%H-%M-%S'))		
 		os.rename(path, path + ".version" + time.strftime('%Y-%m-%d-%H-%M-%S'))
-	#	os.unlink
+		#	os.unlink
 	
     #http://docs.python.org/library/os.html#os.utime
     utimens = os.utime
@@ -232,7 +235,8 @@ class Loopback(LoggingMixIn, Operations):
                 backdata = os.read(ft, size)
                 fn = os.open(path + ".version" + time.strftime('%Y-%m-%d-%H-%M-%S'), os.O_WRONLY | os.O_CREAT)
                 os.write(fn, backdata)
-                os.close(fn)            
+                os.close(fn)
+                os.close(ft)         
             os.lseek(fd, offset, 0)
             return os.write(fd, data)
 
