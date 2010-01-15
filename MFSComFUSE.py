@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
 import time
-import shutil
+
 """
 Based on the examples provided with fusepy binding created by Giorgos Verigakis
 from http://code.google.com/p/fusepy/
@@ -36,14 +36,15 @@ import os
 
 from fuse import FUSE, Operations, LoggingMixIn
 
+import MFSCore
 
-class Loopback(LoggingMixIn, Operations):    
+class MFSComFUSE(LoggingMixIn, Operations):    
     def __init__(self, root):
         self.root = realpath(root)
         self.rwlock = Lock()
 
     def __call__(self, op, path, *args):
-        return super(Loopback, self).__call__(op, self.root + path, *args)
+        return super(MFSComFUSE, self).__call__(op, self.root + path, *args)
     
     """ uses the access() system call to verify permissions over path.
     where mode:
@@ -173,9 +174,8 @@ class Loopback(LoggingMixIn, Operations):
         return os.rename(old, self.root + new)
     
     #http://docs.python.org/library/os.html#os.rmdir
-#    rmdir = os.rmdir
     def rmdir(self, path):
-        shutil.move(path, path + ".version" + time.strftime('%Y-%m-%d-%H-%M-%S'))
+        MFSCore.rmdir(path)
     
     """
     The function statvfs() returns information about a mounted file system.
@@ -207,21 +207,14 @@ class Loopback(LoggingMixIn, Operations):
         with open(path, 'r+') as f:
 			#A template for opening a file that ensures the file is closed when 
 			#the block is left. http://www.python.org/dev/peps/pep-0343/
-            size = os.path.getsize(path)
-            if length <> size and not ".version" in path:
-                data = f.read(size)
-                fn = os.open(path + ".version" + time.strftime('%Y-%m-%d-%H-%M-%S'), os.O_WRONLY | os.O_CREAT)
-                os.write(fn,data)
-                os.close(fn)
+            MFSCore.truncate(path,length,f)
             f.truncate(length)
     
     #Remove (delete) the file path. This is the same function as remove(); the unlink() 
     #name is its traditional Unix name. http://docs.python.org/library/os.html#os.unlink
     #http://docs.python.org/library/datetime.html?highlight=time#strftime-behavior
-    def unlink(self, path):
-        #shutil.move(path, path + ".version" + time.strftime('%Y-%m-%d-%H-%M-%S'))		
-		os.rename(path, path + ".version" + time.strftime('%Y-%m-%d-%H-%M-%S'))
-		#	os.unlink
+    def unlink(self, path):	
+		MFSCore.unlink(path)
 	
     #http://docs.python.org/library/os.html#os.utime
     utimens = os.utime
@@ -229,14 +222,7 @@ class Loopback(LoggingMixIn, Operations):
     #http://docs.python.org/library/os.html#os.write
     def write(self, path, data, offset, fd):
         with self.rwlock:
-            if not ".version" in path:
-                ft = os.open(path, os.O_RDONLY)
-                size = os.path.getsize(path)
-                backdata = os.read(ft, size)
-                fn = os.open(path + ".version" + time.strftime('%Y-%m-%d-%H-%M-%S'), os.O_WRONLY | os.O_CREAT)
-                os.write(fn, backdata)
-                os.close(fn)
-                os.close(ft)         
+            MFSCore.write(path)         
             os.lseek(fd, offset, 0)
             return os.write(fd, data)
 
@@ -244,4 +230,4 @@ if __name__ == "__main__":
     if len(argv) != 3:
         print 'usage: %s <root> <mountpoint>' % argv[0]
         exit(2)	# Unix programs generally use 2 for command line syntax errors
-    fuse = FUSE(Loopback(argv[1]), argv[2], foreground=True)
+    fuse = FUSE(MFSComFUSE(argv[1]), argv[2], foreground=True)
