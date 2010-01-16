@@ -54,12 +54,12 @@ def shouldVersion(path):
 					if int(attrfile.get('max_file_size')) < os.path.getsize(path):
 						return True
 					else:
-						return False #file to big to be versioned
+						return False #file too big to be versioned
 				else:
 					if int(MFSConfig['max_file_size']) < os.path.getsize(path):
 						return True
 					else:
-						return False #file to big to be versioned
+						return False #file too big to be versioned
 			else:
 				return False #versioning disabled
 		else:
