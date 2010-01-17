@@ -6,9 +6,21 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>465</width>
-    <height>480</height>
+    <width>558</width>
+    <height>472</height>
    </rect>
+  </property>
+  <property name="minimumSize">
+   <size>
+    <width>558</width>
+    <height>472</height>
+   </size>
+  </property>
+  <property name="maximumSize">
+   <size>
+    <width>558</width>
+    <height>472</height>
+   </size>
   </property>
   <property name="windowTitle">
    <string>MainWindow</string>
@@ -141,7 +153,7 @@
         <rect>
          <x>20</x>
          <y>50</y>
-         <width>108</width>
+         <width>81</width>
          <height>23</height>
         </rect>
        </property>
@@ -154,7 +166,7 @@
         <rect>
          <x>20</x>
          <y>70</y>
-         <width>108</width>
+         <width>121</width>
          <height>23</height>
         </rect>
        </property>
@@ -309,7 +321,7 @@
       <property name="geometry">
        <rect>
         <x>100</x>
-        <y>133</y>
+        <y>166</y>
         <width>101</width>
         <height>18</height>
        </rect>
@@ -325,7 +337,7 @@
       <property name="geometry">
        <rect>
         <x>10</x>
-        <y>110</y>
+        <y>143</y>
         <width>291</width>
         <height>18</height>
        </rect>
@@ -338,7 +350,7 @@
       <property name="geometry">
        <rect>
         <x>20</x>
-        <y>150</y>
+        <y>183</y>
         <width>108</width>
         <height>23</height>
        </rect>
@@ -351,8 +363,8 @@
       <property name="geometry">
        <rect>
         <x>20</x>
-        <y>130</y>
-        <width>108</width>
+        <y>163</y>
+        <width>81</width>
         <height>23</height>
        </rect>
       </property>
@@ -364,7 +376,7 @@
       <property name="geometry">
        <rect>
         <x>10</x>
-        <y>20</y>
+        <y>12</y>
         <width>171</width>
         <height>18</height>
        </rect>
@@ -377,7 +389,7 @@
       <property name="geometry">
        <rect>
         <x>10</x>
-        <y>180</y>
+        <y>213</y>
         <width>421</width>
         <height>41</height>
        </rect>
@@ -399,7 +411,7 @@
       <property name="geometry">
        <rect>
         <x>90</x>
-        <y>222</y>
+        <y>255</y>
         <width>71</width>
         <height>18</height>
        </rect>
@@ -415,7 +427,7 @@
       <property name="geometry">
        <rect>
         <x>20</x>
-        <y>216</y>
+        <y>249</y>
         <width>55</width>
         <height>28</height>
        </rect>
@@ -434,7 +446,7 @@
       <property name="geometry">
        <rect>
         <x>162</x>
-        <y>297</y>
+        <y>330</y>
         <width>20</width>
         <height>21</height>
        </rect>
@@ -450,7 +462,7 @@
       <property name="geometry">
        <rect>
         <x>100</x>
-        <y>290</y>
+        <y>323</y>
         <width>55</width>
         <height>28</height>
        </rect>
@@ -463,7 +475,7 @@
       <property name="geometry">
        <rect>
         <x>76</x>
-        <y>300</y>
+        <y>333</y>
         <width>20</width>
         <height>20</height>
        </rect>
@@ -479,7 +491,7 @@
       <property name="geometry">
        <rect>
         <x>10</x>
-        <y>254</y>
+        <y>287</y>
         <width>421</width>
         <height>41</height>
        </rect>
@@ -501,10 +513,59 @@
       <property name="geometry">
        <rect>
         <x>20</x>
-        <y>290</y>
+        <y>323</y>
         <width>51</width>
         <height>28</height>
        </rect>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="pushButton_7">
+      <property name="geometry">
+       <rect>
+        <x>10</x>
+        <y>50</y>
+        <width>111</width>
+        <height>28</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Select File...</string>
+      </property>
+     </widget>
+     <widget class="QLineEdit" name="lineEdit_3">
+      <property name="geometry">
+       <rect>
+        <x>130</x>
+        <y>66</y>
+        <width>291</width>
+        <height>26</height>
+       </rect>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="pushButton_8">
+      <property name="geometry">
+       <rect>
+        <x>10</x>
+        <y>80</y>
+        <width>111</width>
+        <height>28</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Select Folder...</string>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="pushButton_9">
+      <property name="geometry">
+       <rect>
+        <x>310</x>
+        <y>110</y>
+        <width>111</width>
+        <height>91</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Refresh</string>
       </property>
      </widget>
     </widget>
@@ -620,13 +681,52 @@
      </widget>
     </widget>
    </widget>
+   <widget class="QPushButton" name="pushButton_10">
+    <property name="geometry">
+     <rect>
+      <x>470</x>
+      <y>60</y>
+      <width>81</width>
+      <height>28</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Start</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="pushButton_11">
+    <property name="geometry">
+     <rect>
+      <x>470</x>
+      <y>100</y>
+      <width>81</width>
+      <height>28</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Stop</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="pushButton_12">
+    <property name="geometry">
+     <rect>
+      <x>470</x>
+      <y>380</y>
+      <width>81</width>
+      <height>28</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Save</string>
+    </property>
+   </widget>
   </widget>
   <widget class="QMenuBar" name="menubar">
    <property name="geometry">
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>465</width>
+     <width>558</width>
      <height>25</height>
     </rect>
    </property>
@@ -663,6 +763,9 @@
   <action name="actionAbout">
    <property name="text">
     <string>About</string>
+   </property>
+   <property name="menuRole">
+    <enum>QAction::AboutRole</enum>
    </property>
   </action>
  </widget>
