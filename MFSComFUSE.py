@@ -226,8 +226,5 @@ class MFSComFUSE(LoggingMixIn, Operations):
             os.lseek(fd, offset, 0)
             return os.write(fd, data)
 
-if __name__ == "__main__":
-    if len(argv) != 3:
-        print 'usage: %s <root> <mountpoint>' % argv[0]
-        exit(2)	# Unix programs generally use 2 for command line syntax errors
-    fuse = FUSE(MFSComFUSE(argv[1]), argv[2], foreground=True)
+def startFS(sourcePath,destPath,fg):
+    FUSE(MFSComFUSE(sourcePath),destPath,foreground = fg)

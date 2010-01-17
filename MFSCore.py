@@ -70,3 +70,8 @@ def shouldVersion(path):
 	else:
 		return False #no need to version a version
 	
+import MFSComFUSE
+
+def startFS(sourcePath,destPath,fg=True):
+	MFSComFUSE.startFS(sourcePath, destPath, fg)
+	
