@@ -27,6 +27,9 @@
   </property>
   <widget class="QWidget" name="centralwidget">
    <widget class="QTabWidget" name="tabWidget">
+    <property name="enabled">
+     <bool>true</bool>
+    </property>
     <property name="geometry">
      <rect>
       <x>0</x>
@@ -43,6 +46,9 @@
       <string>General Settings</string>
      </attribute>
      <widget class="QGroupBox" name="groupBox">
+      <property name="enabled">
+       <bool>true</bool>
+      </property>
       <property name="geometry">
        <rect>
         <x>10</x>
@@ -305,7 +311,7 @@
        <property name="geometry">
         <rect>
          <x>162</x>
-         <y>217</y>
+         <y>220</y>
          <width>20</width>
          <height>21</height>
         </rect>
@@ -320,129 +326,23 @@
      <attribute name="title">
       <string>Per File Settings</string>
      </attribute>
-     <widget class="QLabel" name="label_10">
-      <property name="enabled">
-       <bool>false</bool>
-      </property>
-      <property name="geometry">
-       <rect>
-        <x>100</x>
-        <y>166</y>
-        <width>101</width>
-        <height>18</height>
-       </rect>
-      </property>
-      <property name="frameShadow">
-       <enum>QFrame::Plain</enum>
-      </property>
-      <property name="text">
-       <string>default: Enable</string>
-      </property>
-     </widget>
-     <widget class="QLabel" name="label_11">
-      <property name="geometry">
-       <rect>
-        <x>10</x>
-        <y>143</y>
-        <width>291</width>
-        <height>18</height>
-       </rect>
-      </property>
-      <property name="text">
-       <string>Enable or disable versioning:</string>
-      </property>
-     </widget>
-     <widget class="QRadioButton" name="radioButton_3">
-      <property name="geometry">
-       <rect>
-        <x>20</x>
-        <y>183</y>
-        <width>108</width>
-        <height>23</height>
-       </rect>
-      </property>
-      <property name="text">
-       <string>Disable</string>
-      </property>
-     </widget>
-     <widget class="QRadioButton" name="radioButton_4">
-      <property name="geometry">
-       <rect>
-        <x>20</x>
-        <y>163</y>
-        <width>81</width>
-        <height>23</height>
-       </rect>
-      </property>
-      <property name="text">
-       <string>Enable</string>
-      </property>
-     </widget>
      <widget class="QLabel" name="label_12">
       <property name="geometry">
        <rect>
         <x>10</x>
         <y>12</y>
-        <width>171</width>
+        <width>211</width>
         <height>18</height>
        </rect>
+      </property>
+      <property name="font">
+       <font>
+        <weight>75</weight>
+        <bold>true</bold>
+       </font>
       </property>
       <property name="text">
        <string>Search for a file or folder:</string>
-      </property>
-     </widget>
-     <widget class="QLabel" name="label_13">
-      <property name="geometry">
-       <rect>
-        <x>10</x>
-        <y>213</y>
-        <width>421</width>
-        <height>41</height>
-       </rect>
-      </property>
-      <property name="text">
-       <string>Maximum number of versions allowed (-1 = no limit):</string>
-      </property>
-      <property name="scaledContents">
-       <bool>true</bool>
-      </property>
-      <property name="wordWrap">
-       <bool>true</bool>
-      </property>
-     </widget>
-     <widget class="QLabel" name="label_14">
-      <property name="enabled">
-       <bool>false</bool>
-      </property>
-      <property name="geometry">
-       <rect>
-        <x>90</x>
-        <y>255</y>
-        <width>71</width>
-        <height>18</height>
-       </rect>
-      </property>
-      <property name="frameShadow">
-       <enum>QFrame::Plain</enum>
-      </property>
-      <property name="text">
-       <string>default: -1</string>
-      </property>
-     </widget>
-     <widget class="QSpinBox" name="spinBox_4">
-      <property name="geometry">
-       <rect>
-        <x>20</x>
-        <y>249</y>
-        <width>55</width>
-        <height>28</height>
-       </rect>
-      </property>
-      <property name="minimum">
-       <number>-1</number>
-      </property>
-      <property name="value">
-       <number>-1</number>
       </property>
      </widget>
      <widget class="QLabel" name="label_15">
@@ -451,8 +351,8 @@
       </property>
       <property name="geometry">
        <rect>
-        <x>162</x>
-        <y>330</y>
+        <x>172</x>
+        <y>350</y>
         <width>20</width>
         <height>21</height>
        </rect>
@@ -467,8 +367,8 @@
       </property>
       <property name="geometry">
        <rect>
-        <x>100</x>
-        <y>323</y>
+        <x>110</x>
+        <y>340</y>
         <width>55</width>
         <height>28</height>
        </rect>
@@ -480,8 +380,8 @@
       </property>
       <property name="geometry">
        <rect>
-        <x>76</x>
-        <y>333</y>
+        <x>86</x>
+        <y>350</y>
         <width>20</width>
         <height>20</height>
        </rect>
@@ -496,8 +396,8 @@
       </property>
       <property name="geometry">
        <rect>
-        <x>10</x>
-        <y>287</y>
+        <x>20</x>
+        <y>304</y>
         <width>421</width>
         <height>41</height>
        </rect>
@@ -518,8 +418,8 @@
       </property>
       <property name="geometry">
        <rect>
-        <x>20</x>
-        <y>323</y>
+        <x>30</x>
+        <y>340</y>
         <width>51</width>
         <height>28</height>
        </rect>
@@ -561,17 +461,132 @@
        <string>Select Folder...</string>
       </property>
      </widget>
-     <widget class="QPushButton" name="pushButton_9">
+     <widget class="QGroupBox" name="groupBox_3">
+      <property name="enabled">
+       <bool>false</bool>
+      </property>
       <property name="geometry">
        <rect>
-        <x>310</x>
-        <y>110</y>
-        <width>111</width>
-        <height>91</height>
+        <x>10</x>
+        <y>130</y>
+        <width>431</width>
+        <height>171</height>
        </rect>
       </property>
+      <property name="title">
+       <string>Per File Settings</string>
+      </property>
+      <widget class="QLabel" name="label_13">
+       <property name="geometry">
+        <rect>
+         <x>10</x>
+         <y>100</y>
+         <width>421</width>
+         <height>41</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>Maximum number of versions allowed (-1 = no limit):</string>
+       </property>
+       <property name="scaledContents">
+        <bool>true</bool>
+       </property>
+       <property name="wordWrap">
+        <bool>true</bool>
+       </property>
+      </widget>
+      <widget class="QSpinBox" name="spinBox_4">
+       <property name="geometry">
+        <rect>
+         <x>20</x>
+         <y>136</y>
+         <width>55</width>
+         <height>28</height>
+        </rect>
+       </property>
+       <property name="minimum">
+        <number>-1</number>
+       </property>
+       <property name="value">
+        <number>-1</number>
+       </property>
+      </widget>
+      <widget class="QRadioButton" name="radioButton_4">
+       <property name="geometry">
+        <rect>
+         <x>20</x>
+         <y>50</y>
+         <width>81</width>
+         <height>23</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>Enable</string>
+       </property>
+      </widget>
+      <widget class="QLabel" name="label_21">
+       <property name="geometry">
+        <rect>
+         <x>10</x>
+         <y>30</y>
+         <width>291</width>
+         <height>18</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>Enable or disable versioning:</string>
+       </property>
+      </widget>
+      <widget class="QRadioButton" name="radioButton_3">
+       <property name="geometry">
+        <rect>
+         <x>20</x>
+         <y>70</y>
+         <width>121</width>
+         <height>23</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>Disable</string>
+       </property>
+      </widget>
+     </widget>
+     <widget class="QLabel" name="label_10">
+      <property name="enabled">
+       <bool>false</bool>
+      </property>
+      <property name="geometry">
+       <rect>
+        <x>110</x>
+        <y>183</y>
+        <width>101</width>
+        <height>18</height>
+       </rect>
+      </property>
+      <property name="frameShadow">
+       <enum>QFrame::Plain</enum>
+      </property>
       <property name="text">
-       <string>Refresh</string>
+       <string>default: Enable</string>
+      </property>
+     </widget>
+     <widget class="QLabel" name="label_14">
+      <property name="enabled">
+       <bool>false</bool>
+      </property>
+      <property name="geometry">
+       <rect>
+        <x>100</x>
+        <y>272</y>
+        <width>71</width>
+        <height>18</height>
+       </rect>
+      </property>
+      <property name="frameShadow">
+       <enum>QFrame::Plain</enum>
+      </property>
+      <property name="text">
+       <string>default: -1</string>
       </property>
      </widget>
     </widget>
