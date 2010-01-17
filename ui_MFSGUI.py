@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'MalcolmGUI.ui'
 #
-# Created: Sun Jan 17 15:44:16 2010
+# Created: Sun Jan 17 20:49:43 2010
 #      by: PyQt4 UI code generator 4.6
 #
 # WARNING! All changes made in this file will be lost!
@@ -51,6 +51,8 @@ class Ui_MainWindow(object):
         self.label_2.setObjectName("label_2")
         self.radioButton = QtGui.QRadioButton(self.groupBox_2)
         self.radioButton.setGeometry(QtCore.QRect(20, 50, 81, 23))
+        self.radioButton.setCheckable(True)
+        self.radioButton.setChecked(False)
         self.radioButton.setObjectName("radioButton")
         self.radioButton_2 = QtGui.QRadioButton(self.groupBox_2)
         self.radioButton_2.setGeometry(QtCore.QRect(20, 70, 121, 23))
@@ -230,6 +232,7 @@ class Ui_MainWindow(object):
         self.retranslateUi(MainWindow)
         self.tabWidget.setCurrentIndex(0)
         QtCore.QObject.connect(self.actionQuit, QtCore.SIGNAL("triggered()"), MainWindow.close)
+        QtCore.QObject.connect(self.actionSave, QtCore.SIGNAL("triggered()"), self.pushButton_12.click)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
 
     def retranslateUi(self, MainWindow):

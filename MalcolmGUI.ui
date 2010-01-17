@@ -160,6 +160,12 @@
        <property name="text">
         <string>Enable</string>
        </property>
+       <property name="checkable">
+        <bool>true</bool>
+       </property>
+       <property name="checked">
+        <bool>false</bool>
+       </property>
       </widget>
       <widget class="QRadioButton" name="radioButton_2">
        <property name="geometry">
@@ -790,6 +796,22 @@
     <hint type="destinationlabel">
      <x>278</x>
      <y>235</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>actionSave</sender>
+   <signal>triggered()</signal>
+   <receiver>pushButton_12</receiver>
+   <slot>click()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>510</x>
+     <y>418</y>
     </hint>
    </hints>
   </connection>

@@ -7,7 +7,9 @@ MFSConfig = dict([
 	('versioning_enabled', 'true'),
 	('max_no_versions', '-1'), 		#-1:disabled
 	('max_file_size', '524288000'), 	#500MB
-	('timestamp_format', '%Y-%m-%d-%H-%M-%S')
+	('timestamp_format', '%Y-%m-%d-%H-%M-%S'),
+	('mountpoint_source', ''),
+	('mountpoint_dest', '')
 ])
 
 def rmdir(path):
