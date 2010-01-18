@@ -7,6 +7,7 @@ import platform
 import MFSCore
 import cPickle
 import xattr
+import re
 
 __version__ = "0.0.1"
 
@@ -14,6 +15,8 @@ class MFSAPI(QMainWindow, ui_MFSGUI.Ui_MainWindow):
 	def __init__(self,parent=None):
 		super(MFSAPI,self).__init__(parent)
 		self.setupUi(self)
+		
+		self.model = QStringListModel()
 		
 		self.readSettings()
 		
@@ -31,6 +34,9 @@ class MFSAPI(QMainWindow, ui_MFSGUI.Ui_MainWindow):
 		self.connect(self.spinBox, SIGNAL("valueChanged(int)"), self.saveSpinnedsb1)
 		self.connect(self.lineEdit, SIGNAL("textChanged(QString)"), self.saveMountPointSrc)
 		self.connect(self.lineEdit_2, SIGNAL("textChanged(QString)"), self.saveMountPointDest)
+		self.connect(self.pushButton_9, SIGNAL("clicked()"), self.updateFileSelectionForOp)
+		self.connect(self.pushButton_13, SIGNAL("clicked()"), self.updateDirSelectionForOp)
+		self.connect(self.lineEdit_4, SIGNAL("textChanged(QString)"), self.showFileVersions)
 
 
 	def readSettings(self):
@@ -70,14 +76,31 @@ class MFSAPI(QMainWindow, ui_MFSGUI.Ui_MainWindow):
 		QFileDialog.ShowDirsOnly | QFileDialog.DontResolveSymlinks)
 		self.lineEdit_3.setText(filename)
 		
+	def updateFileSelectionForOp(self):
+		filename = QFileDialog.getOpenFileName(self, "Select File", os.path.expanduser('~'))
+		self.lineEdit_4.setText(filename)
+		
+	def updateDirSelectionForOp(self):
+		filename = QFileDialog.getExistingDirectory(self, "Select Directory", os.path.expanduser('~'),
+		QFileDialog.ShowDirsOnly | QFileDialog.DontResolveSymlinks)
+		self.lineEdit_4.setText(filename)
+		
 	def startMFS(self):
 		if str(self.lineEdit.text()) != "" and str(self.lineEdit_2.text()) != "":
+			self.groupBox.setEnabled(False)
+			self.pushButton_10.setEnabled(False)
 			self.filesystem = FileSystem(self)
 			self.filesystem.initialize(str(self.lineEdit.text()),str(self.lineEdit_2.text()),True)
 			self.filesystem.start()
+			self.pushButton_11.setEnabled(True)
+			#self.pushButton_11.setStyleSheet("* {background-color: rgb(200,0,0)}")
 		
 	def stopMFS(self):
 		os.system("fusermount -u " + str(self.lineEdit_2.text()))
+		self.groupBox.setEnabled(True)
+		self.pushButton_10.setEnabled(True)
+		self.pushButton_11.setEnabled(False)
+		#self.pushButton_11.setStyleSheet("* {background-color: rgb(0,0,0)}")
 		
 	def showAbout(self):
 		QMessageBox.about(self, "About MalcolmFS",
@@ -101,8 +124,9 @@ class MFSAPI(QMainWindow, ui_MFSGUI.Ui_MainWindow):
 	def saveMountPointDest(self):
 		MFSCore.MFSConfig['mountpoint_dest'] = str(self.lineEdit_2.text())
 	
-	# method for setting xatrributes for the given path (a file or directory)
-	def setFileXAttr(self,path):
+	def setFileXAttr(self, path):
+		# method for setting xatrributes for the given path (a file or directory)
+		path = os.path.join(str(MFSCore.MFSConfig['mountpoint_source']),os.path.relpath(str(path),str(MFSCore.MFSConfig['mountpoint_dest'])))
 		attrfile = xattr.xattr(path)
 		if self.radioButton_4.isChecked() == True:
 			attrfile.set('user.versioning_enabled', 'true')
@@ -120,19 +144,12 @@ class MFSAPI(QMainWindow, ui_MFSGUI.Ui_MainWindow):
 		else:
 			path = str(self.lineEdit_3.text())
 			if os.path.exists(path):
-				if os.path.isfile(path):
-					#change the xattr for the specified file (path)
-					self.setFileXAttr(path)
-				else:
-					#change the xattr for every dir and file in the selected dir (path)
-					for a,b,c in os.walk(path):
-						self.setFileXAttr(a)
-						for x in c:
-							self.setFileXAttr(os.path.join(a,x))
+				self.setFileXAttr(path)
 			
 	def showFileSettings(self, path):
-		# path = str(self.lineEdit_3.text())
+		#functionality for the second tab
 		if os.path.exists(path):
+			path = os.path.join(str(MFSCore.MFSConfig['mountpoint_source']),os.path.relpath(str(path),str(MFSCore.MFSConfig['mountpoint_dest'])))
 			self.groupBox_3.setEnabled(True)
 			attrfile = xattr.xattr(path)
 			#get enabled/disabled versioning property
@@ -157,6 +174,26 @@ class MFSAPI(QMainWindow, ui_MFSGUI.Ui_MainWindow):
 				self.spinBox_4.setValue(int(MFSCore.MFSConfig['max_no_versions']))
 		else:
 			self.groupBox_3.setEnabled(False)
+	
+	def showFileVersions(self, path):
+		#functionality for the third tab
+		if os.path.exists(path):
+			path = str(path)
+			if path[-1] == os.sep:
+				(path,file) = os.path.split(path[1:-1])
+			else:
+				(path,file) = os.path.split(path)
+			files = os.listdir(path)
+			r = re.compile("^\."+file+"-....-..-..-..-..-..\.MFS$") #version format: .<filename>-<timestamp>.MFS
+			versions = filter(r.search, files)
+			if len(versions) > 0:
+				self.listView.setEnabled(True)
+				self.model.setStringList(versions)
+				self.listView.setModel(self.model)	
+			else:
+				self.listView.setEnabled(False)		
+		else:
+			self.listView.setEnabled(False)
 
 class FileSystem(QThread):
 	def __init__(self,parent=None):
