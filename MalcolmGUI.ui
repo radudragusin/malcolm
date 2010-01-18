@@ -650,6 +650,9 @@
       </property>
      </widget>
      <widget class="QGroupBox" name="groupBox_5">
+      <property name="enabled">
+       <bool>false</bool>
+      </property>
       <property name="geometry">
        <rect>
         <x>0</x>
@@ -661,30 +664,14 @@
       <property name="title">
        <string/>
       </property>
-      <widget class="QPushButton" name="pushButton_3">
-       <property name="enabled">
-        <bool>false</bool>
-       </property>
-       <property name="geometry">
-        <rect>
-         <x>11</x>
-         <y>21</y>
-         <width>85</width>
-         <height>28</height>
-        </rect>
-       </property>
-       <property name="text">
-        <string>View Info</string>
-       </property>
-      </widget>
       <widget class="QPushButton" name="pushButton_4">
        <property name="enabled">
         <bool>false</bool>
        </property>
        <property name="geometry">
         <rect>
-         <x>102</x>
-         <y>21</y>
+         <x>130</x>
+         <y>20</y>
          <width>85</width>
          <height>28</height>
         </rect>
@@ -693,14 +680,30 @@
         <string>Open</string>
        </property>
       </widget>
+      <widget class="QPushButton" name="pushButton_3">
+       <property name="enabled">
+        <bool>false</bool>
+       </property>
+       <property name="geometry">
+        <rect>
+         <x>11</x>
+         <y>20</y>
+         <width>85</width>
+         <height>28</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>View Info</string>
+       </property>
+      </widget>
       <widget class="QPushButton" name="pushButton_5">
        <property name="enabled">
         <bool>false</bool>
        </property>
        <property name="geometry">
         <rect>
-         <x>193</x>
-         <y>21</y>
+         <x>244</x>
+         <y>20</y>
          <width>85</width>
          <height>28</height>
         </rect>
@@ -715,8 +718,8 @@
        </property>
        <property name="geometry">
         <rect>
-         <x>284</x>
-         <y>21</y>
+         <x>360</x>
+         <y>20</y>
          <width>85</width>
          <height>28</height>
         </rect>

@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'MalcolmGUI.ui'
 #
-# Created: Mon Jan 18 04:38:44 2010
+# Created: Mon Jan 18 12:54:09 2010
 #      by: PyQt4 UI code generator 4.6
 #
 # WARNING! All changes made in this file will be lost!
@@ -190,23 +190,24 @@ class Ui_MainWindow(object):
         self.pushButton_9.setGeometry(QtCore.QRect(10, 50, 111, 28))
         self.pushButton_9.setObjectName("pushButton_9")
         self.groupBox_5 = QtGui.QGroupBox(self.tab_2)
+        self.groupBox_5.setEnabled(False)
         self.groupBox_5.setGeometry(QtCore.QRect(0, 330, 451, 71))
         self.groupBox_5.setObjectName("groupBox_5")
-        self.pushButton_3 = QtGui.QPushButton(self.groupBox_5)
-        self.pushButton_3.setEnabled(False)
-        self.pushButton_3.setGeometry(QtCore.QRect(11, 21, 85, 28))
-        self.pushButton_3.setObjectName("pushButton_3")
         self.pushButton_4 = QtGui.QPushButton(self.groupBox_5)
         self.pushButton_4.setEnabled(False)
-        self.pushButton_4.setGeometry(QtCore.QRect(102, 21, 85, 28))
+        self.pushButton_4.setGeometry(QtCore.QRect(130, 20, 85, 28))
         self.pushButton_4.setObjectName("pushButton_4")
+        self.pushButton_3 = QtGui.QPushButton(self.groupBox_5)
+        self.pushButton_3.setEnabled(False)
+        self.pushButton_3.setGeometry(QtCore.QRect(11, 20, 85, 28))
+        self.pushButton_3.setObjectName("pushButton_3")
         self.pushButton_5 = QtGui.QPushButton(self.groupBox_5)
         self.pushButton_5.setEnabled(False)
-        self.pushButton_5.setGeometry(QtCore.QRect(193, 21, 85, 28))
+        self.pushButton_5.setGeometry(QtCore.QRect(244, 20, 85, 28))
         self.pushButton_5.setObjectName("pushButton_5")
         self.pushButton_6 = QtGui.QPushButton(self.groupBox_5)
         self.pushButton_6.setEnabled(False)
-        self.pushButton_6.setGeometry(QtCore.QRect(284, 21, 85, 28))
+        self.pushButton_6.setGeometry(QtCore.QRect(360, 20, 85, 28))
         self.pushButton_6.setObjectName("pushButton_6")
         self.listView = QtGui.QListView(self.tab_2)
         self.listView.setEnabled(True)
@@ -290,8 +291,8 @@ class Ui_MainWindow(object):
         self.pushButton_13.setText(QtGui.QApplication.translate("MainWindow", "Select Folder...", None, QtGui.QApplication.UnicodeUTF8))
         self.label_18.setText(QtGui.QApplication.translate("MainWindow", "Search for a file or folder:", None, QtGui.QApplication.UnicodeUTF8))
         self.pushButton_9.setText(QtGui.QApplication.translate("MainWindow", "Select File...", None, QtGui.QApplication.UnicodeUTF8))
-        self.pushButton_3.setText(QtGui.QApplication.translate("MainWindow", "View Info", None, QtGui.QApplication.UnicodeUTF8))
         self.pushButton_4.setText(QtGui.QApplication.translate("MainWindow", "Open", None, QtGui.QApplication.UnicodeUTF8))
+        self.pushButton_3.setText(QtGui.QApplication.translate("MainWindow", "View Info", None, QtGui.QApplication.UnicodeUTF8))
         self.pushButton_5.setText(QtGui.QApplication.translate("MainWindow", "Restore", None, QtGui.QApplication.UnicodeUTF8))
         self.pushButton_6.setText(QtGui.QApplication.translate("MainWindow", "Delete", None, QtGui.QApplication.UnicodeUTF8))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab_2), QtGui.QApplication.translate("MainWindow", "Per File Operations", None, QtGui.QApplication.UnicodeUTF8))
