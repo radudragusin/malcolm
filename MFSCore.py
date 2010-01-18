@@ -16,7 +16,7 @@ def rmdir(path):
 	if shouldVersion(path):
 		shutil.move(path, versionPath(path))
 	else:
-		os.rmdir(path)
+		shutil.rmtree(path) #os.rmdir(path)
 
 def truncate(path, length, f):
 	size = os.path.getsize(path)
@@ -48,17 +48,18 @@ def versionPath(oldpath):
 	return d + os.sep + '.' + b + '-' + time.strftime(MFSConfig['timestamp_format']) + '.MFS'
 			
 def shouldVersion(path):
-	attrfile = xattr.xattr(path)
+	apath = os.path.join(MFSConfig['mountpoint_source'],os.path.relpath(str(path),MFSConfig['mountpoint_dest']))
+	attrfile = xattr.xattr(apath)
 	if not ".MFS" in path:
-		if 'versioning_enabled' in attrfile:
-			if attrfile.get('versioning_enabled') == 'true':
-				if 'max_file_size' in attrfile:
-					if int(attrfile.get('max_file_size')) < os.path.getsize(path):
+		if 'user.versioning_enabled' in attrfile:
+			if attrfile.get('user.versioning_enabled') == 'true':
+				if 'user.max_file_size' in attrfile:
+					if int(attrfile.get('user.max_file_size')) > os.path.getsize(path):
 						return True
 					else:
 						return False #file too big to be versioned
 				else:
-					if int(MFSConfig['max_file_size']) < os.path.getsize(path):
+					if int(MFSConfig['max_file_size']) > os.path.getsize(path):
 						return True
 					else:
 						return False #file too big to be versioned

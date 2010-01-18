@@ -8,6 +8,9 @@ import MFSCore
 import cPickle
 import xattr
 import re
+import time
+import subprocess
+import shutil
 
 __version__ = "0.0.1"
 
@@ -19,6 +22,8 @@ class MFSAPI(QMainWindow, ui_MFSGUI.Ui_MainWindow):
 		self.model = QStringListModel()
 		
 		self.readSettings()
+		
+		self.listView.setEditTriggers(QAbstractItemView.NoEditTriggers)
 		
 		self.connect(self.pushButton_2, SIGNAL("clicked()"), self.updateMountPointSource)
 		self.connect(self.pushButton, SIGNAL("clicked()"), self.updateMountPointDest)
@@ -37,6 +42,10 @@ class MFSAPI(QMainWindow, ui_MFSGUI.Ui_MainWindow):
 		self.connect(self.pushButton_9, SIGNAL("clicked()"), self.updateFileSelectionForOp)
 		self.connect(self.pushButton_13, SIGNAL("clicked()"), self.updateDirSelectionForOp)
 		self.connect(self.lineEdit_4, SIGNAL("textChanged(QString)"), self.showFileVersions)
+		self.connect(self.listView, SIGNAL("clicked(QModelIndex)"), self.updateOperations)
+		self.connect(self.pushButton_3, SIGNAL("clicked()"), self.viewFileVersionInfo)
+		self.connect(self.pushButton_4, SIGNAL("clicked()"), self.openFileVersion)
+		self.connect(self.pushButton_6, SIGNAL("clicked()"), self.deleteFileVersion)
 
 
 	def readSettings(self):
@@ -126,7 +135,7 @@ class MFSAPI(QMainWindow, ui_MFSGUI.Ui_MainWindow):
 	
 	def setFileXAttr(self, path):
 		# method for setting xatrributes for the given path (a file or directory)
-		path = os.path.join(str(MFSCore.MFSConfig['mountpoint_source']),os.path.relpath(str(path),str(MFSCore.MFSConfig['mountpoint_dest'])))
+		path = os.path.join(MFSCore.MFSConfig['mountpoint_source'],os.path.relpath(str(path),MFSCore.MFSConfig['mountpoint_dest']))
 		attrfile = xattr.xattr(path)
 		if self.radioButton_4.isChecked() == True:
 			attrfile.set('user.versioning_enabled', 'true')
@@ -149,7 +158,7 @@ class MFSAPI(QMainWindow, ui_MFSGUI.Ui_MainWindow):
 	def showFileSettings(self, path):
 		#functionality for the second tab
 		if os.path.exists(path):
-			path = os.path.join(str(MFSCore.MFSConfig['mountpoint_source']),os.path.relpath(str(path),str(MFSCore.MFSConfig['mountpoint_dest'])))
+			path = os.path.join(MFSCore.MFSConfig['mountpoint_source'],os.path.relpath(str(path),MFSCore.MFSConfig['mountpoint_dest']))
 			self.groupBox_3.setEnabled(True)
 			attrfile = xattr.xattr(path)
 			#get enabled/disabled versioning property
@@ -183,17 +192,68 @@ class MFSAPI(QMainWindow, ui_MFSGUI.Ui_MainWindow):
 				(path,file) = os.path.split(path[1:-1])
 			else:
 				(path,file) = os.path.split(path)
+			
+			self.versionedPath = path
+			path = os.path.join(MFSCore.MFSConfig['mountpoint_source'], os.path.relpath(path,MFSCore.MFSConfig['mountpoint_dest']))
+			path = os.path.normpath(path)			
+			self.operationPath = path
+			
 			files = os.listdir(path)
 			r = re.compile("^\."+file+"-....-..-..-..-..-..\.MFS$") #version format: .<filename>-<timestamp>.MFS
 			versions = filter(r.search, files)
 			if len(versions) > 0:
 				self.listView.setEnabled(True)
 				self.model.setStringList(versions)
-				self.listView.setModel(self.model)	
+				self.listView.setModel(self.model)
+				self.groupBox_5.setEnabled(False)
 			else:
-				self.listView.setEnabled(False)		
+				self.listView.setEnabled(False)
+				self.model.setStringList([])
+				self.listView.setModel(self.model)
+				self.groupBox_5.setEnabled(False)		
 		else:
 			self.listView.setEnabled(False)
+			self.groupBox_5.setEnabled(False)
+			
+	def updateOperations(self, index):
+		self.selectedVersion = index.data().toString()
+		self.groupBox_5.setEnabled(True)
+		self.pushButton_3.setEnabled(True)
+		self.pushButton_4.setEnabled(True)
+		self.pushButton_5.setEnabled(True)
+		self.pushButton_6.setEnabled(True)
+		
+	def viewFileVersionInfo(self):
+		path = os.path.join(self.operationPath,str(self.selectedVersion))
+		infoBox = QMessageBox()
+		infoBox.setWindowTitle("Version Information")
+		infoBox.setIcon(QMessageBox.Information)
+		infoBox.setText("<b>Info about file "+str(self.selectedVersion)+":</b>")
+		infoText = "<p>Complete File Path: " + os.path.join(self.versionedPath,str(self.selectedVersion))
+		infoText += "<p>File Size: " + str(os.path.getsize(path)) + " bytes"
+		infoText += "<p>Last Modified " + str(time.strftime('Date: %Y.%m.%d Time: %H:%M:%S',time.gmtime(os.path.getctime(path)))) 
+		infoBox.setInformativeText(infoText)
+		detailedText = ""
+		attrfile = xattr.xattr(path)
+		for at in attrfile.list():
+			detailedText += str(at)+": "+str(attrfile.get(at)) + "\n"
+		infoBox.setDetailedText(detailedText)
+		infoBox.exec_()
+		
+	def openFileVersion(self):
+		path = os.path.join(self.versionedPath,str(self.selectedVersion))
+		subprocess.Popen(["xdg-open",path])
+		
+	def deleteFileVersion(self):
+		path = os.path.join(self.versionedPath,str(self.selectedVersion))
+		reply = QMessageBox.question(self, "", "Are you sure you want to permanently delete file "+path+"?",
+		QMessageBox.Yes|QMessageBox.Default, QMessageBox.No|QMessageBox.Escape)
+		if reply == QMessageBox.Yes:
+			if os.path.isfile(path):
+				os.unlink(path)
+			else:
+				shutil.rmtree(path)
+			self.showFileVersions(self.lineEdit_4.text())
 
 class FileSystem(QThread):
 	def __init__(self,parent=None):
