@@ -2,14 +2,15 @@ import time
 import os
 import shutil
 import xattr
+import re
 
 MFSConfig = dict([
 	('versioning_enabled', 'true'),
 	('max_no_versions', '-1'), 		#-1:disabled
 	('max_file_size', '524288000'), 	#500MB
 	('timestamp_format', '%Y-%m-%d-%H-%M-%S'),
-	('mountpoint_source', ''),
-	('mountpoint_dest', '')
+	('mountpoint_source', os.path.expanduser('~')),
+	('mountpoint_dest', os.path.expanduser('~'))
 ])
 
 def rmdir(path):
@@ -49,29 +50,53 @@ def versionPath(oldpath):
 			
 def shouldVersion(path):
 	apath = os.path.join(MFSConfig['mountpoint_source'],os.path.relpath(str(path),MFSConfig['mountpoint_dest']))
+	apath = os.path.normpath(apath)
 	attrfile = xattr.xattr(apath)
-	if not ".MFS" in path:
-		if 'user.versioning_enabled' in attrfile:
-			if attrfile.get('user.versioning_enabled') == 'true':
-				if 'user.max_file_size' in attrfile:
-					if int(attrfile.get('user.max_file_size')) > os.path.getsize(path):
-						return True
-					else:
-						return False #file too big to be versioned
-				else:
-					if int(MFSConfig['max_file_size']) > os.path.getsize(path):
-						return True
-					else:
-						return False #file too big to be versioned
-			else:
-				return False #versioning disabled
-		else:
-			if MFSConfig['versioning_enabled'] == 'true':
-				return True
-			else:
-				return False #versioning disabled by default
-	else:
+	
+	if ".MFS" in path:
 		return False #no need to version a version
+		
+	if os.path.getsize(path) > int(MFSConfig['max_file_size']):
+		return False #file too big to be versioned
+		
+	if not isVersioningEnabled(attrfile) or not isInRangeToVersion(attrfile,apath):
+		return False #file has either versioning disabled or the max number of versions per file was excideed
+	
+	return True
+
+def isVersioningEnabled(attrfile):
+	if 'user.versioning_enabled' in attrfile:
+		if attrfile.get('user.versioning_enabled') == 'true':
+			return True
+		else:
+			return False
+	else:
+		if MFSConfig['versioning_enabled'] == 'true':
+			return True
+		else:
+			return False
+
+def isInRangeToVersion(attrfile,apath):
+	if 'user.max_no_versions' in attrfile:
+		if int(attrfile.get('user.max_no_versions')) == -1:
+			return True
+		else:
+			return noOfVersions(apath) <= int(attrfile.get('user.max_no_versions'))
+	else:
+		if int(MFSConfig['max_no_versions']) == -1:
+			return True
+		else:
+			return noOfVersions(apath) <= int(MFSConfig['max_no_versions'])
+
+def noOfVersions(apath):
+	if apath[-1] == os.sep:
+		(apath,file) = os.path.split(apath[1:-1])
+	else:
+		(apath,file) = os.path.split(apath)
+	files = os.listdir(apath)
+	r = re.compile("^\."+file+"-....-..-..-..-..-..\.MFS$") #version format: .<filename>-<timestamp>.MFS
+	versions = filter(r.search, files)
+	return len(versions)						
 	
 import MFSComFUSE
 

@@ -25,6 +25,10 @@
   <property name="windowTitle">
    <string>MalcolmFS</string>
   </property>
+  <property name="windowIcon">
+   <iconset>
+    <normaloff>malcolm_medium.png</normaloff>malcolm_medium.png</iconset>
+  </property>
   <widget class="QWidget" name="centralwidget">
    <widget class="QTabWidget" name="tabWidget">
     <property name="enabled">
@@ -39,7 +43,7 @@
      </rect>
     </property>
     <property name="currentIndex">
-     <number>2</number>
+     <number>0</number>
     </property>
     <widget class="QWidget" name="tab">
      <attribute name="title">
