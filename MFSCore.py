@@ -1,3 +1,8 @@
+"""
+This module contains all the versioning logic of the MalcolmFS.
+"""
+
+
 import time
 import os
 import shutil

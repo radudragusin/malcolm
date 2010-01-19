@@ -1,5 +1,9 @@
 #!/usr/bin/env python
 
+"""
+This is the module responsible for the communication between the product and the external world. 
+"""
+
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 import ui_MFSGUI
