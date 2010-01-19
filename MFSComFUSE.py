@@ -110,7 +110,7 @@ class MFSComFUSE(LoggingMixIn, Operations):
     http://manpages.ubuntu.com/manpages/karmic/en/man1/setfattr.1.html
     """
     getxattr = None
-    
+        
     """
     listxattr  retrieves  the  list  of extended attribute names associated 
     with the given path in the filesystem.
