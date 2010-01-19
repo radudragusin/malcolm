@@ -33,7 +33,6 @@ class MFSAPI(QMainWindow, ui_MFSGUI.Ui_MainWindow):
 		self.connect(self.pushButton_10, SIGNAL("clicked()"), self.startMFS)
 		self.connect(self.pushButton_11, SIGNAL("clicked()"), self.stopMFS)
 		self.connect(self.actionAbout, SIGNAL("triggered()"), self.showAbout)
-		self.connect(self.actionQuit, SIGNAL("triggered()"), self.closeApp)
 		self.connect(self.pushButton_12, SIGNAL("clicked()"), self.saveSettings)
 		self.connect(self.radioButton, SIGNAL("clicked()"), self.saveCheckedrb1)
 		self.connect(self.radioButton_2, SIGNAL("clicked()"), self.saveCheckedrb2)
@@ -56,6 +55,8 @@ class MFSAPI(QMainWindow, ui_MFSGUI.Ui_MainWindow):
 			f = open("settings.MMFS","r")
 			MFSCore.MFSConfig = cPickle.load(f)
 			f.close()
+		elif QDesktopServices.displayName(QDesktopServices.DocumentsLocation) != "":
+			MFSCore.MFSConfig['mountpoint_source'] = QDesktopServices.displayName(QDesktopServices.DocumentsLocation)
 		#get default source and dest mountpoint
 		self.lineEdit.setText(MFSCore.MFSConfig['mountpoint_source'])
 		self.lineEdit_2.setText(MFSCore.MFSConfig['mountpoint_dest'])
@@ -121,10 +122,11 @@ class MFSAPI(QMainWindow, ui_MFSGUI.Ui_MainWindow):
 			<p>Code License: <a href="http://www.creativecommons.org/licenses/MIT/">MIT License</a>
 			<p>Python %s -Qt %s -PyQt %s on %s"""
 			% (__version__,platform.python_version(),QT_VERSION_STR,PYQT_VERSION_STR,platform.system()))
-	
-	def closeApp(self):
+			
+	def closeEvent(self,event):
 		if self.started == True:
 			self.stopMFS()
+		event.accept()
 	
 	def saveSettings(self):
 		#if in first tab or in the third (General Settings or Per File Operations)
