@@ -1,4 +1,7 @@
 """
+This module is the communication layer between MFSCore and fusepy 
+that will forward calls and receive data from the FUSE library. 
+
 Based on the examples provided with fusepy binding created by Giorgos Verigakis
 from http://code.google.com/p/fusepy/
 """
