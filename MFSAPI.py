@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 import ui_MFSGUI
@@ -16,6 +18,10 @@ __version__ = "0.0.1"
 
 class MFSAPI(QMainWindow, ui_MFSGUI.Ui_MainWindow):
 	def __init__(self,parent=None):
+		"""Initializes the main window of the application and connects the application's 
+		events with its logic part.
+		"""
+		
 		super(MFSAPI,self).__init__(parent)
 		self.setupUi(self)
 		
@@ -51,6 +57,9 @@ class MFSAPI(QMainWindow, ui_MFSGUI.Ui_MainWindow):
 	#FIRST TAB FUNCTIONALITIES
 
 	def readSettings(self):
+		"""Called when the main window is initoalized. Reads and stores the information from the 
+		settings file (if any), and populates the first tab of the application.
+		"""
 		if os.path.isfile("settings.MMFS"):
 			f = open("settings.MMFS","r")
 			MFSCore.MFSConfig = cPickle.load(f)
@@ -71,48 +80,69 @@ class MFSAPI(QMainWindow, ui_MFSGUI.Ui_MainWindow):
 		self.spinBox.setValue(int(MFSCore.MFSConfig['max_no_versions']))
 
 	def updateMountPointSource(self):
+		"""Opens a file browsing window for selection of the mounting point source path.
+		"""
 		filename = QFileDialog.getExistingDirectory(self, "Select Mount Point Source", self.browsingStartPoint(),
 		QFileDialog.ShowDirsOnly | QFileDialog.DontResolveSymlinks)
 		if filename != "": 
 			self.lineEdit.setText(filename)
 
 	def updateMountPointDest(self):
+		"""Opens a file browsing window for selection of the mounting point destination path.
+		"""
 		filename = QFileDialog.getExistingDirectory(self, "Select Mount Point Destination", self.browsingStartPoint(),
 		QFileDialog.ShowDirsOnly | QFileDialog.DontResolveSymlinks)
 		if filename != "":
 			self.lineEdit_2.setText(filename)
 		
 	def saveCheckedrb1(self):
+		""""Sets the value of the general 'versioning_enabled' setting to 'true'. """
 		MFSCore.MFSConfig['versioning_enabled'] = 'true'
 	def saveCheckedrb2(self):
+		""""Sets the value of the general 'versioning_enabled' setting to 'false'. """
 		MFSCore.MFSConfig['versioning_enabled'] = 'false'
 	def saveSpinnedsb1(self):
+		""""Sets the value of the general 'max_no_versions' setting to the value from the spinBox. """
 		MFSCore.MFSConfig['max_no_versions'] = self.spinBox.value()
 	def saveMountPointSrc(self):
+		""""Sets the value of the general 'mountpoint_source' setting to the current selected path."""
 		MFSCore.MFSConfig['mountpoint_source'] = os.path.normpath(str(self.lineEdit.text()))
 	def saveMountPointDest(self):
+		""""Sets the value of the general 'mountpoint_dest' setting to the current selected path."""
 		MFSCore.MFSConfig['mountpoint_dest'] = os.path.normpath(str(self.lineEdit_2.text()))
 			
 	#SIDE BUTTONS AND MENU FUNCTIONALITY
 		
 	def startMFS(self):
-		if str(self.lineEdit.text()) != "" and str(self.lineEdit_2.text()) != "":
+		"""Creates a new thread for the filesystem to be mounted.
+		If the mounting paths are the same, or are empty, a warning message box will be opened, and the filesystem will not start
+		"""
+		pathSrc = os.path.normpath(str(self.lineEdit.text()))
+		pathDest = os.path.normpath(str(self.lineEdit_2.text()))
+		if os.path.exists(pathSrc) and os.path.exists(pathDest) and pathSrc != pathDest and pathSrc != "" and pathDest != "":
 			self.groupBox.setEnabled(False)
 			self.pushButton_10.setEnabled(False)
 			self.filesystem = FileSystem(self)
-			self.filesystem.initialize(str(self.lineEdit.text()),str(self.lineEdit_2.text()),True)
+			self.filesystem.initialize(pathSrc,pathDest,True)
 			self.filesystem.start()
 			self.pushButton_11.setEnabled(True)
 			self.started = True
+		else:
+			self.givePathWarning("The filesystem's mounting paths are not valid!",
+			"The two strings must be valid paths that do not point to the same location, and neither of them should be empty.")
 		
 	def stopMFS(self):
-		os.system("fusermount -u " + str(self.lineEdit_2.text()))
+		"""Unmounts the filesystem.
+		"""
+		os.system("fusermount -u " + os.path.normpath(str(self.lineEdit_2.text())))
 		self.groupBox.setEnabled(True)
 		self.pushButton_10.setEnabled(True)
 		self.pushButton_11.setEnabled(False)
 		self.started = False
 		
 	def showAbout(self):
+		"""Opens a message box containg application information.
+		"""
 		QMessageBox.about(self, "About MalcolmFS",
 			"""<b>MalcolmFS</b> v %s
 			<p>A stackable versioning file system implemented in Python.
@@ -124,25 +154,38 @@ class MFSAPI(QMainWindow, ui_MFSGUI.Ui_MainWindow):
 			% (__version__,platform.python_version(),QT_VERSION_STR,PYQT_VERSION_STR,platform.system()))
 			
 	def closeEvent(self,event):
+		"""Called either when the Quit button or the X is pressed. Unmounts the filesystem before exiting.
+		"""
 		if self.started == True:
 			self.stopMFS()
 		event.accept()
 	
 	def saveSettings(self):
-		#if in first tab or in the third (General Settings or Per File Operations)
+		"""Logic for the Save button in the interface.
+		For the first tab, it will save the general settings.
+		For the second, it will save settings per selected file/dir.
+		For the third, as there is nothing to be saved, it will save the general settings (like for the first tab).
+		"""
 		if self.tabWidget.currentIndex() != 1:
-			f = open("settings.MMFS", "w")
-			cPickle.dump(MFSCore.MFSConfig,f)
-			f.close()
-		#if in the second tab (Per File Settings)
+			#in first tab or in the third (General Settings or Per File Operations)
+			if os.path.exists(MFSCore.MFSConfig['mountpoint_source']) and os.path.exists(MFSCore.MFSConfig['mountpoint_dest']) and MFSCore.MFSConfig['mountpoint_source'] != MFSCore.MFSConfig['mountpoint_dest']:
+				f = open("settings.MMFS", "w")
+				cPickle.dump(MFSCore.MFSConfig,f)
+				f.close()
+			else:
+				self.givePathWarning("The filesystem's mounting paths are not valid!",
+				"The two strings must be valid paths that do not point to the same location, and neither of them should be empty.")
 		else:
+			#in the second tab (Per File Settings)
 			path = str(self.lineEdit_3.text())
 			if os.path.exists(path):
 				self.setFileXAttr(path)
 				
 	def setFileXAttr(self, path):
-		# method for setting xatrributes for the given path (a file or directory)
+		"""Method for setting xatrributes for the given path (a file or directory).
+		"""
 		path = os.path.join(MFSCore.MFSConfig['mountpoint_source'],os.path.relpath(str(path),MFSCore.MFSConfig['mountpoint_dest']))
+		path = os.path.normpath(path)
 		attrfile = xattr.xattr(path)
 		if self.radioButton_4.isChecked() == True:
 			attrfile.set('user.versioning_enabled', 'true')
@@ -153,18 +196,23 @@ class MFSAPI(QMainWindow, ui_MFSGUI.Ui_MainWindow):
 	#SECOND TAB FUNCTIONALITIES
 			
 	def updateFileSelection(self):
+		"""Opens a file browsing window for selection of a file.
+		"""
 		filename = QFileDialog.getOpenFileName(self, "Select File", self.browsingStartPoint())
 		if filename != "":
 			self.lineEdit_3.setText(filename)
 		
 	def updateDirSelection(self):
+		"""Opens a file browsing window for selection of a directory.
+		"""
 		filename = QFileDialog.getExistingDirectory(self, "Select Directory", self.browsingStartPoint(),
 		QFileDialog.ShowDirsOnly | QFileDialog.DontResolveSymlinks)
 		if filename != "":
 			self.lineEdit_3.setText(filename)
 			
 	def showFileSettings(self, path):
-		#functionality for the second tab
+		"""Contains most of the functionality for the second tab, by showing the versioning properties of a file or directory.
+		"""
 		path = os.path.normpath(str(path))
 		if os.path.exists(path) and '.MFS' not in path:
 			if (self.started == True and os.path.commonprefix([path,MFSCore.MFSConfig['mountpoint_dest']]) == MFSCore.MFSConfig['mountpoint_dest']) or self.started == False:
@@ -195,7 +243,8 @@ class MFSAPI(QMainWindow, ui_MFSGUI.Ui_MainWindow):
 					self.spinBox_4.setValue(int(MFSCore.MFSConfig['max_no_versions']))
 			else:
 				#give warning and autocomplete lineEdit_3
-				self.givePathWarning()
+				self.givePathWarning("The path must be within the filesystem!",
+				"When the system is started, you can only change properties of the files and folders within the mountpoint destination path.")
 				self.lineEdit_3.setText(MFSCore.MFSConfig['mountpoint_dest'])
 		else:
 			self.groupBox_3.setEnabled(False)
@@ -203,18 +252,24 @@ class MFSAPI(QMainWindow, ui_MFSGUI.Ui_MainWindow):
 	#THIRD TAB FUNCTIONALITIES
 	
 	def updateFileSelectionForOp(self):
+		"""Opens a file browsing window for selection of a file.
+		"""
 		filename = QFileDialog.getOpenFileName(self, "Select File", self.browsingStartPoint())
 		if filename != "":
 			self.lineEdit_4.setText(filename)
 		
 	def updateDirSelectionForOp(self):
+		"""Opens a file browsing window for selection of a directory.
+		"""
 		filename = QFileDialog.getExistingDirectory(self, "Select Directory", self.browsingStartPoint(),
 		QFileDialog.ShowDirsOnly | QFileDialog.DontResolveSymlinks)
 		if filename != "":
 			self.lineEdit_4.setText(filename)
 	
 	def showFileVersions(self, path):
-		#populate the list view with version names
+		"""Contains most of the functionality for the third tab, by showing the versions of a selected file or directory.
+		Here the list of versions is populated with names.
+		"""
 		path = os.path.normpath(str(path))
 		if os.path.exists(path) and '.MFS' not in path:	
 			if (self.started == True and os.path.commonprefix([path,MFSCore.MFSConfig['mountpoint_dest']]) == MFSCore.MFSConfig['mountpoint_dest']) or self.started == False:
@@ -222,6 +277,7 @@ class MFSAPI(QMainWindow, ui_MFSGUI.Ui_MainWindow):
 					(path,file) = os.path.split(path[1:-1])
 				else:
 					(path,file) = os.path.split(path)
+				path = os.path.normpath(path)
 				self.versionedPath = path
 				if self.started == True:
 					path = os.path.join(MFSCore.MFSConfig['mountpoint_source'], os.path.relpath(path,MFSCore.MFSConfig['mountpoint_dest']))
@@ -230,7 +286,7 @@ class MFSAPI(QMainWindow, ui_MFSGUI.Ui_MainWindow):
 				self.browsedFile = file
 				
 				files = os.listdir(path)
-				r = re.compile("^\."+file+"-....-..-..-..-..-..\.MFS$") #version format: .<filename>-<timestamp>.MFS
+				r = re.compile("^\."+file+"-....-..-..-..-..-..\.MFS$")
 				versions = filter(r.search, files)
 			
 				if len(versions) > 0:
@@ -245,7 +301,8 @@ class MFSAPI(QMainWindow, ui_MFSGUI.Ui_MainWindow):
 					self.groupBox_5.setEnabled(False)
 			else:
 				#give warning and autocomplete lineEdit
-				self.givePathWarning()
+				self.givePathWarning("The path must be within the filesystem!",
+				"When the system is started, you can only change properties of the files and folders within the mountpoint destination path.")
 				self.lineEdit_4.setText(MFSCore.MFSConfig['mountpoint_dest'])
 		else:
 			self.listView.setEnabled(False)
@@ -254,6 +311,8 @@ class MFSAPI(QMainWindow, ui_MFSGUI.Ui_MainWindow):
 			self.groupBox_5.setEnabled(False)
 			
 	def updateOperationsButtons(self, index):
+		"""Enables the operation buttons when a version file is selected from the list.
+		"""
 		self.selectedVersion = index.data().toString()
 		self.groupBox_5.setEnabled(True)
 		self.pushButton_3.setEnabled(True)
@@ -262,12 +321,16 @@ class MFSAPI(QMainWindow, ui_MFSGUI.Ui_MainWindow):
 		self.pushButton_6.setEnabled(True)
 		
 	def viewFileVersionInfo(self):
+		"""Opens a message box showing information related to the selected file version.
+		Information include: complete path, size, last modification date, and any extended attributes
+		associated with the file.
+		"""
 		path = os.path.join(self.operationPath,str(self.selectedVersion))
 		infoBox = QMessageBox()
 		infoBox.setWindowTitle("Version Information")
 		infoBox.setIcon(QMessageBox.Information)
-		infoBox.setText("<b>Info about file "+str(self.selectedVersion)+":</b>")
-		infoText = "<p>Complete File Path: " + os.path.join(self.versionedPath,str(self.selectedVersion))
+		infoBox.setText("<b>Info about "+str(self.selectedVersion)+":</b>")
+		infoText = "<p>Complete Path: " + os.path.join(self.versionedPath,str(self.selectedVersion))
 		infoText += "<p>File Size: " + str(os.path.getsize(path)) + " bytes"
 		infoText += "<p>Last Modified " + str(time.strftime('Date: %Y.%m.%d Time: %H:%M:%S GMT',time.gmtime(os.path.getctime(path)))) 
 		infoBox.setInformativeText(infoText)
@@ -279,10 +342,15 @@ class MFSAPI(QMainWindow, ui_MFSGUI.Ui_MainWindow):
 		infoBox.exec_()
 		
 	def openFileVersion(self):
+		"""Opens the selected version file from the list of versions.
+		"""
 		path = os.path.join(self.versionedPath,str(self.selectedVersion))
 		subprocess.Popen(["xdg-open",path])
 		
 	def deleteFileVersion(self):
+		"""Deletes the selected version file from the list of versions. 
+		Raises a message box asking for user confirmation.
+		"""
 		path = os.path.join(self.versionedPath,str(self.selectedVersion))
 		reply = QMessageBox.question(self, "", "Are you sure you want to permanently delete "+path+"?",
 		QMessageBox.Yes|QMessageBox.Default, QMessageBox.No|QMessageBox.Escape)
@@ -294,11 +362,14 @@ class MFSAPI(QMainWindow, ui_MFSGUI.Ui_MainWindow):
 			self.showFileVersions(self.lineEdit_4.text())
 			
 	def restoreFileVersion(self):
-		path = os.path.join(self.versionedPath,str(self.selectedVersion))
+		"""Restores the selected version file from the list of versions as the current version.
+		Raises a message box asking for user confirmation.
+		"""
+		path = os.path.normpath(os.path.join(self.versionedPath,str(self.selectedVersion)))
 		reply = QMessageBox.question(self, "", "Are you sure you want to restore "+path+"?",
 		QMessageBox.Yes|QMessageBox.Default, QMessageBox.No|QMessageBox.Escape)
 		if reply == QMessageBox.Yes:
-			initPath = os.path.join(self.versionedPath,str(self.browsedFile))
+			initPath = os.path.normpath(os.path.join(self.versionedPath,str(self.browsedFile)))
 			if os.path.isfile(path):
 				# current version of the file (if exists) needs to be versioned, 
 				# and the selected version for restoring needs to be renamed
@@ -314,7 +385,10 @@ class MFSAPI(QMainWindow, ui_MFSGUI.Ui_MainWindow):
 	#OTHER GENERAL FUNCTIONALITIES
 				
 	def browsingStartPoint(self):
-		#method for selecting the file/dir browsing start point
+		"""Returns the path from which file browsing should start in a file browsing window. 
+		If the filesystem is started, returns the path of 'mountpoint_dest'.
+		Othewise, returns the path in 'mountpoint_source'
+		"""
 		if self.started == True:
 			#start from mountpoint dest
 			return MFSCore.MFSConfig['mountpoint_dest']
@@ -322,9 +396,11 @@ class MFSAPI(QMainWindow, ui_MFSGUI.Ui_MainWindow):
 			#start from mountpoint src
 			return MFSCore.MFSConfig['mountpoint_source']
 			
-	def givePathWarning(self):
-		box = QMessageBox(QMessageBox.Warning, "Warning", "The path must be within the filesystem!")
-		box.setDetailedText("When the system is started, you can only change properties of the files and folders within the mountpoint destination path.")
+	def givePathWarning(self,text,detailedText):
+		"""Opens a warning message box providing the user for an explanation for the warning.
+		"""
+		box = QMessageBox(QMessageBox.Warning, "Warning", text)
+		box.setDetailedText(detailedText)
 		box.exec_()
 
 class FileSystem(QThread):
@@ -341,6 +417,11 @@ class FileSystem(QThread):
 		MFSCore.startFS(self.sourcePath, self.destPath, self.fg)
 
 if __name__ == "__main__":
+	"""The main function called first. The application can be started both with or without the user interface.
+	When started from the console with option -cli, the interface is not initialised.
+	Usage: python MFSAPI.py -cli <source_mountpoint> <dest_mountpoint> (without GUI)
+		or python MFSAPI.py (with GUI)
+	"""
 	import sys
 	if len(sys.argv) > 1 and sys.argv[1]=="-cli":
 		if len(sys.argv) != 4:
