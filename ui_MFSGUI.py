@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'MalcolmGUI.ui'
 #
-# Created: Mon Jan 18 12:54:09 2010
+# Created: Tue Jan 19 12:30:04 2010
 #      by: PyQt4 UI code generator 4.6
 #
 # WARNING! All changes made in this file will be lost!
@@ -15,6 +15,9 @@ class Ui_MainWindow(object):
         MainWindow.resize(558, 472)
         MainWindow.setMinimumSize(QtCore.QSize(558, 472))
         MainWindow.setMaximumSize(QtCore.QSize(558, 472))
+        icon = QtGui.QIcon()
+        icon.addPixmap(QtGui.QPixmap("malcolm_medium.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        MainWindow.setWindowIcon(icon)
         self.centralwidget = QtGui.QWidget(MainWindow)
         self.centralwidget.setObjectName("centralwidget")
         self.tabWidget = QtGui.QTabWidget(self.centralwidget)
@@ -253,7 +256,7 @@ class Ui_MainWindow(object):
         self.menubar.addAction(self.menuHelp.menuAction())
 
         self.retranslateUi(MainWindow)
-        self.tabWidget.setCurrentIndex(2)
+        self.tabWidget.setCurrentIndex(0)
         QtCore.QObject.connect(self.actionQuit, QtCore.SIGNAL("triggered()"), MainWindow.close)
         QtCore.QObject.connect(self.actionSave, QtCore.SIGNAL("triggered()"), self.pushButton_12.click)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
